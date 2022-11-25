@@ -10,10 +10,11 @@ export const appRouter = router({
         id: z.number(),
       }),
     )
-    .query(({ input }) => {
+    .query(async ({ input }) =>{
       const api = new PokemonClient()
-      const pokemon =  api.getPokemonById(input.id)
-      return pokemon
+      const pokemon = await api.getPokemonById(input.id)
+
+      return {name:pokemon.name,sprites:pokemon.sprites}
     }),
 });
 
