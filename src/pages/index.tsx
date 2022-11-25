@@ -24,7 +24,7 @@ export default function Home({first,second}:Props) {
     <div className='border rounded  flex justify-between max-w-3xl items-center mt-2 pb-12 p-8'>
       
       <div className='w-64 h-64 flex flex-col items-center'>
-      <img src={firstPokemon.data?.sprites.front_default} alt='pokemon' className="w-full"/>
+      <img src={firstPokemon.data?.sprites.front_default || ''} alt='pokemon' className="w-full"/>
       <span className="text-xl text-center capitalize mt-[-2rem] pb-1">{firstPokemon.data?.name}</span>
       <button className={btn}>Vote</button>
       </div>
@@ -32,7 +32,7 @@ export default function Home({first,second}:Props) {
       <span className='p-8'>Vs</span>
 
       <div className='w-64 h-64 flex flex-col items-center'>
-        <img src={secondPokemon.data?.sprites.front_default} alt='pokemon' className="w-full"/>
+        <img src={secondPokemon.data?.sprites.front_default || ''} alt='pokemon' className="w-full"/>
       <span className="text-xl text-center capitalize mt-[-2rem] pb-1">{secondPokemon.data?.name}</span>
       <button className={btn}>Vote</button>
       </div>
