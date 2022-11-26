@@ -1,5 +1,6 @@
 import { httpBatchLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
+import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 import type { AppRouter } from '../server/routers/_app';
 
 function getBaseUrl() {
@@ -42,3 +43,6 @@ export const trpc = createTRPCNext<AppRouter>({
    **/
   ssr: true,
 });
+
+export type RouterInput = inferRouterInputs<AppRouter>;
+export type RouterOutput = inferRouterOutputs<AppRouter>;

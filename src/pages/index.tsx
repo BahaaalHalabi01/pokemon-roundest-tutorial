@@ -1,54 +1,77 @@
 import { getOptionsForVote } from "@/utils/getRandomPokemon"
-import { trpc } from "@/utils/trpc"
-import { GetServerSideProps } from "next"
-import { useState } from "react"
-
+import { RouterOutput, trpc } from '@/utils/trpc'
+import { useState } from 'react'
+import { PropsWithChildren } from 'react'
+import type React from 'react'
 
 const btn =
-  "inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm font-medium rounded-full text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500";
+  'inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm font-medium rounded-full text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
 
 export default function Home() {
+  const [ids, setIds] = useState(() => getOptionsForVote())
 
+  const [first, second] = ids
 
-  const [ids,setIds] = useState(()=>getOptionsForVote())
+  const firstPokemon = trpc['get-pokemon-by-id'].useQuery({ id: first })
+  const secondPokemon = trpc['get-pokemon-by-id'].useQuery({ id: second })
 
-  const [first,second] = ids
+  if (firstPokemon.isLoading || secondPokemon.isLoading) return null
 
-
-  const firstPokemon = trpc["get-pokemon-by-id"].useQuery({id:first})
-  const secondPokemon = trpc["get-pokemon-by-id"].useQuery({id:second})
-  
-  if(firstPokemon.isLoading || secondPokemon.isLoading) return null
-
-
-  const voteForRoundest = (selected:number) =>{
-
-  setIds(getOptionsForVote())
+  const voteForRoundest = (selected: number) => {
+    setIds(getOptionsForVote())
   }
 
-
   return (
-   <div className='h-screen w-screen flex flex-col justify-center items-center'>
-    <div className=' text-2xl text-center '>Which Pokemon is rounder ?</div>
+    <div className='h-screen w-screen flex flex-col justify-center items-center'>
+      <div className=' text-2xl text-center '>Which Pokemon is rounder ?</div>
+      {/* Poke Voting */}
+      <div className='border rounded  flex justify-between max-w-3xl items-center mt-2  p-10 pb-16'>
+        {!firstPokemon.isLoading &&
+          firstPokemon.data &&
+          !secondPokemon.isLoading &&
+          secondPokemon.data && (
+            <>
+              <PokemonListing
+                pokemon={firstPokemon.data}
+                voteForRoundest={() => voteForRoundest(first)}
+              ></PokemonListing>
+              <span className='p-8'>Vs</span>
+              <PokemonListing
+                pokemon={secondPokemon.data}
+                voteForRoundest={() => voteForRoundest(second)}
+              ></PokemonListing>
+            </>
+          )}
+      </div>
+    </div>
+  )
+}
 
-    <div className='border rounded  flex justify-between max-w-3xl items-center mt-2  p-10 pb-16'>
-      
-      <div className='w-64 h-64 flex flex-col items-center mt-[-2rem]'>
-      <img src={firstPokemon.data?.sprites.front_default || ''} alt='pokemon' className="w-full"/>
-      <span className="text-xl text-center capitalize mt-[-2rem] pb-1">{firstPokemon.data?.name}</span>
-      <button className={btn} onClick={()=>voteForRoundest(first)}>Vote</button>
-      </div>
-      
-      <span className='p-8'>Vs</span>
+type PokemonFromServer = RouterOutput['get-pokemon-by-id']
 
-      <div className='w-64 h-64 flex flex-col items-center mt-[-2rem]'>
-        <img src={secondPokemon.data?.sprites.front_default || ''} alt='pokemon' className="w-full"/>
-      <span className="text-xl text-center capitalize mt-[-2rem] pb-1">{secondPokemon.data?.name}</span>
-      <button className={btn} onClick={()=>voteForRoundest(second)}>Vote</button>
-      </div>
-      
-      
-      </div>
+type PropsPoke = {
+  pokemon: PokemonFromServer
+  voteForRoundest: () => void
+}
+
+const PokemonListing: React.FC<PropsWithChildren<PropsPoke>> = ({
+  pokemon,
+  children,
+  voteForRoundest,
+}) => {
+  return (
+    <div className='flex flex-col items-center mt-[-2rem]'>
+      <img
+        src={pokemon.sprites.front_default || ''}
+        alt='pokemon'
+        className='w-64 h-64 '
+      />
+      <span className='text-xl text-center capitalize mt-[-2rem] pb-1'>
+        {pokemon.name}
+      </span>
+      <button className={btn} onClick={() => voteForRoundest()}>
+        Vote
+      </button>
     </div>
   )
 }
