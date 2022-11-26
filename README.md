@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Pokemon-roundest - Which Pokemon is hte most round ?
+
+This is an implementation of "theo ping.gg" roundest pokemon
 
 ## Getting Started
 

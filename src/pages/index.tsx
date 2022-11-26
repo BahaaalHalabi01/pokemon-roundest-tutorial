@@ -3,6 +3,7 @@ import { RouterOutput, trpc } from '@/utils/trpc'
 import { useState } from 'react'
 import { PropsWithChildren } from 'react'
 import type React from 'react'
+import Image from 'next/image'
 
 const btn =
   'inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm font-medium rounded-full text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
@@ -20,7 +21,6 @@ export default function Home() {
   if (firstPokemon.isLoading || secondPokemon.isLoading) return null
 
   const voteForRoundest = (selected: number) => {
-
     if (selected === first) {
       voteMutation.mutate({ votedFor: first, votedAgainst: second })
     } else {
@@ -70,10 +70,13 @@ const PokemonListing: React.FC<PropsWithChildren<PropsPoke>> = ({
 }) => {
   return (
     <div className='flex flex-col items-center mt-[-2rem]'>
-      <img
+      <Image
         src={pokemon.sprites.front_default || ''}
         alt='pokemon'
-        className='w-64 h-64 '
+        quality={100}
+        priority
+        width={256}
+        height={256}
       />
       <span className='text-xl text-center capitalize mt-[-2rem] pb-1'>
         {pokemon.name}
