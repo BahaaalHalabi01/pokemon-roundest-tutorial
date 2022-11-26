@@ -71,7 +71,7 @@ const PokemonListing: React.FC<PropsWithChildren<PropsPoke>> = ({
   return (
     <div className='flex flex-col items-center mt-[-2rem]'>
       <Image
-        src={pokemon.sprites.front_default || ''}
+        src={pokemon.spriteUrl || ''}
         alt='pokemon'
         quality={100}
         priority

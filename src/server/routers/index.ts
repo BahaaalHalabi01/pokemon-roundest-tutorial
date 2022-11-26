@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { procedure, router } from '../trpc'
-import { PokemonClient } from 'pokenode-ts'
 import { prisma } from '@/utils/prisma'
+import { TRPCError } from '@trpc/server'
 
 export const appRouter = router({
   'get-pokemon-by-id': procedure
@@ -11,10 +11,15 @@ export const appRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const api = new PokemonClient()
-      const pokemon = await api.getPokemonById(input.id)
-
-      return { name: pokemon.name, sprites: pokemon.sprites }
+      const pokemon = await prisma.pokemon.findFirst({
+        where: { id: input.id },
+      })
+      if (!pokemon)
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Could not find Pokemon, please try another one.',
+        })
+      return pokemon
     }),
   'cast-vote': procedure
     .input(
