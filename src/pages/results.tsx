@@ -29,20 +29,30 @@ const getPokemonInOrder = async () => {
   })
 }
 
+
+const generateCountPercent = (pokemon: PokemonOrderedQueryResult[number]) => {
+  const { votesAgainst, votesFor } = pokemon._count
+  if (votesFor + votesAgainst === 0) return 0
+  return (votesFor / (votesFor + votesAgainst)) * 100
+}
+
 const PokemonListing: React.FC<{
   pokemon: PokemonOrderedQueryResult[number]
 }> = ({ pokemon }) => {
   return (
-    <div className='flex border-b p-2 items-center'>
-      <Image
-        src={pokemon.spriteUrl || ''}
-        alt='pokemon'
-        quality={100}
-        priority
-        width={128}
-        height={128}
-      />
-      <div className='capitalize'>{pokemon.name}</div>
+    <div className='flex border-b p-2 items-center justify-between'>
+      <div className='flex items-center '>
+        <Image
+          src={pokemon.spriteUrl || ''}
+          alt='pokemon'
+          quality={100}
+          priority
+          width={128}
+          height={128}
+        />
+        <div className='capitalize'>{pokemon.name}</div>
+      </div>
+      <div className='pr-4'>{generateCountPercent(pokemon) + '%'}</div>
     </div>
   )
 }
