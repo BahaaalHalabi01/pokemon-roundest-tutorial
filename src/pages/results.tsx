@@ -71,6 +71,7 @@ export default function Results({ pokemon }: Props) {
 }
 
 export const getStaticProps: GetStaticProps = async (context) => {
+  const DAY_IN_SECONDS = 60 * 60 * 24
   const pokemonOrdered = await getPokemonInOrder()
-  return { props: { pokemon: pokemonOrdered }, revalidate: 60 }
+  return { props: { pokemon: pokemonOrdered }, revalidate: DAY_IN_SECONDS }
 }

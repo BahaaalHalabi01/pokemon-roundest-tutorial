@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { PropsWithChildren } from 'react'
 import type React from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 const btn =
   'inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm font-medium rounded-full text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
@@ -30,27 +31,42 @@ export default function Home() {
     setIds(getOptionsForVote())
   }
 
+  const dataLoaded =
+    !firstPokemon.isLoading &&
+    firstPokemon.data &&
+    !secondPokemon.isLoading &&
+    secondPokemon.data
+
   return (
-    <div className='h-screen w-screen flex flex-col justify-center items-center'>
-      <div className=' text-2xl text-center '>Which Pokemon is rounder ?</div>
+    <div className='h-screen w-screen flex flex-col justify-between items-center relative'>
+      <div className=' text-2xl text-center pt-8'>
+        Which Pokemon is rounder ?
+      </div>
       {/* Poke Voting */}
-      <div className='border rounded  flex justify-between max-w-3xl items-center mt-2  p-10 pb-16'>
-        {!firstPokemon.isLoading &&
-          firstPokemon.data &&
-          !secondPokemon.isLoading &&
-          secondPokemon.data && (
-            <>
-              <PokemonListing
-                pokemon={firstPokemon.data}
-                voteForRoundest={() => voteForRoundest(first)}
-              ></PokemonListing>
-              <span className='p-8'>Vs</span>
-              <PokemonListing
-                pokemon={secondPokemon.data}
-                voteForRoundest={() => voteForRoundest(second)}
-              ></PokemonListing>
-            </>
-          )}
+      {dataLoaded && (
+        <div className='border rounded  flex justify-between max-w-3xl items-center p-10 pb-16'>
+          <>
+            <PokemonListing
+              pokemon={firstPokemon.data}
+              voteForRoundest={() => voteForRoundest(first)}
+            ></PokemonListing>
+            <span className='p-8'>Vs</span>
+            <PokemonListing
+              pokemon={secondPokemon.data}
+              voteForRoundest={() => voteForRoundest(second)}
+            ></PokemonListing>
+          </>
+        </div>
+      )}
+      {!dataLoaded && (
+        <Image src='/rings.svg' alt='loading' width={192} height={192} />
+      )}
+      <div className=' w-full text-xl text-center pb-4'>
+        <a href='https://github.com/BahaaalHalabi01/pokemon-roundest-tutorial'>
+          Github Repo
+        </a>
+        <span className='border-r mx-4'></span>
+        <Link href='/results'>Results Page</Link>
       </div>
     </div>
   )
