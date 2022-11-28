@@ -19,6 +19,7 @@ In order to persist the data you have to create a `.env` file with the structure
 DATABASE_URL=<DATABASE_URL>
 SHADOW_DATABASE_URL=<SHADOW_DATABASE_URL>
 ```
+** if you intend to use other than a mysql database, switch the provider inside of prisma schema
 **about shadow database https://www.prisma.io/docs/concepts/components/prisma-migrate/shadow-database
 
 You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
