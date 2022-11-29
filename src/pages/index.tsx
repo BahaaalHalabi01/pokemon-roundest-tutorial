@@ -69,11 +69,9 @@ export default function Home() {
           </>
         </div>
       )}
-      {isLoading ||
-        isRefetching ||
-        (!pokemonPair && (
-          <Image src='/rings.svg' alt='loading' width={192} height={192} />
-        ))}
+      {(isRefetching || !pokemonPair || isLoading) && (
+        <Image src='/rings.svg' alt='loading' width={192} height={192} />
+      )}
       <div className=' w-full text-xl text-center pb-4'>
         <a href='https://github.com/BahaaalHalabi01/pokemon-roundest-tutorial'>
           Github Repo
