@@ -52,7 +52,9 @@ const PokemonListing: React.FC<{
         />
         <div className='capitalize'>{pokemon.name}</div>
       </div>
-      <div className='pr-4'>{generateCountPercent(pokemon) + '%'}</div>
+      <div className='pr-4'>
+        {generateCountPercent(pokemon).toFixed(2) + '%'}
+      </div>
     </div>
   )
 }
@@ -62,9 +64,19 @@ export default function Results({ pokemon }: Props) {
     <div className='flex flex-col items-center '>
       <h2 className='text-2xl p-4'>Results</h2>
       <div className='flex flex-col w-full max-w-2xl border'>
-        {pokemon?.map((currPoke, index) => (
-          <PokemonListing pokemon={currPoke} key={index} />
-        ))}
+        {pokemon
+          ?.sort((a, b) => {
+            const difference = generateCountPercent(b) - generateCountPercent(a)
+
+            if (difference === 0) {
+              return b._count.votesFor - a._count.votesFor
+            }
+
+            return difference
+          })
+          .map((currPoke, index) => (
+            <PokemonListing pokemon={currPoke} key={index} />
+          ))}
       </div>
     </div>
   )
