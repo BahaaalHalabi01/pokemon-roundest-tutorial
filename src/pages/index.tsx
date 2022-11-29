@@ -43,13 +43,14 @@ export default function Home() {
     refetch()
   }
 
+
   return (
     <div className='h-screen w-screen flex flex-col justify-between items-center relative'>
       <div className=' text-2xl text-center pt-8'>
         Which Pokemon is rounder ?
       </div>
       {/* Poke Voting */}
-      {pokemonPair && (
+      {!isRefetching && pokemonPair && (
         <div className='border rounded  flex justify-between max-w-3xl items-center p-10 pb-16'>
           <>
             <PokemonListing

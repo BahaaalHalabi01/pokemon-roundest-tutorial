@@ -15,7 +15,7 @@ export const appRouter = router({
     if (bothPokemon.length !== 2)
       throw new TRPCError({
         code: 'NOT_FOUND',
-        message: 'Could not find Pokemon, please try another one.',
+        message: 'Could not find two Pokemon, please try again.',
       })
     return { firstPokemon: bothPokemon[0], secondPokemon: bothPokemon[1] }
   }),
