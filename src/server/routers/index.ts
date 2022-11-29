@@ -2,25 +2,24 @@ import { z } from 'zod'
 import { procedure, router } from '../trpc'
 import { prisma } from '@/utils/prisma'
 import { TRPCError } from '@trpc/server'
+import { getOptionsForVote } from '@/utils/getRandomPokemon'
 
 export const appRouter = router({
-  'get-pokemon-by-id': procedure
-    .input(
-      z.object({
-        id: z.number(),
+  'get-pokemon-pair': procedure.query(async () => {
+    const [first, second] = getOptionsForVote()
+
+    const bothPokemon = await prisma.pokemon.findMany({
+      where: { id: { in: [first, second] } },
+    })
+
+    if (bothPokemon.length !== 2)
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Could not find Pokemon, please try another one.',
       })
-    )
-    .query(async ({ input }) => {
-      const pokemon = await prisma.pokemon.findFirst({
-        where: { id: input.id },
-      })
-      if (!pokemon)
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Could not find Pokemon, please try another one.',
-        })
-      return pokemon
-    }),
+    return { firstPokemon: bothPokemon[0], secondPokemon: bothPokemon[1] }
+  }),
+
   'cast-vote': procedure
     .input(
       z.object({

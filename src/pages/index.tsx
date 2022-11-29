@@ -10,32 +10,38 @@ const btn =
   'inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm font-medium rounded-full text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
 
 export default function Home() {
-  const [ids, setIds] = useState(() => getOptionsForVote())
-
-  const [first, second] = ids
-
-  const firstPokemon = trpc['get-pokemon-by-id'].useQuery({ id: first })
-  const secondPokemon = trpc['get-pokemon-by-id'].useQuery({ id: second })
+  const {
+    data: pokemonPair,
+    refetch,
+    isLoading,
+    isRefetching,
+  } = trpc['get-pokemon-pair'].useQuery(undefined, {
+    refetchInterval: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
+  })
 
   const voteMutation = trpc['cast-vote'].useMutation()
 
-  if (firstPokemon.isLoading || secondPokemon.isLoading) return null
-
   const voteForRoundest = (selected: number) => {
-    if (selected === first) {
-      voteMutation.mutate({ votedFor: first, votedAgainst: second })
+    if (!pokemonPair) return
+
+    const { firstPokemon, secondPokemon } = pokemonPair
+
+    if (selected === firstPokemon.id) {
+      voteMutation.mutate({
+        votedFor: firstPokemon.id,
+        votedAgainst: secondPokemon.id,
+      })
     } else {
-      voteMutation.mutate({ votedFor: second, votedAgainst: first })
+      voteMutation.mutate({
+        votedFor: secondPokemon.id,
+        votedAgainst: firstPokemon.id,
+      })
     }
 
-    setIds(getOptionsForVote())
+    refetch()
   }
-
-  const dataLoaded =
-    !firstPokemon.isLoading &&
-    firstPokemon.data &&
-    !secondPokemon.isLoading &&
-    secondPokemon.data
 
   return (
     <div className='h-screen w-screen flex flex-col justify-between items-center relative'>
@@ -43,24 +49,30 @@ export default function Home() {
         Which Pokemon is rounder ?
       </div>
       {/* Poke Voting */}
-      {dataLoaded && (
+      {pokemonPair && (
         <div className='border rounded  flex justify-between max-w-3xl items-center p-10 pb-16'>
           <>
             <PokemonListing
-              pokemon={firstPokemon.data}
-              voteForRoundest={() => voteForRoundest(first)}
+              pokemon={pokemonPair.firstPokemon}
+              voteForRoundest={() =>
+                voteForRoundest(pokemonPair.firstPokemon.id)
+              }
             ></PokemonListing>
             <span className='p-8'>Vs</span>
             <PokemonListing
-              pokemon={secondPokemon.data}
-              voteForRoundest={() => voteForRoundest(second)}
+              pokemon={pokemonPair.secondPokemon}
+              voteForRoundest={() =>
+                voteForRoundest(pokemonPair.secondPokemon.id)
+              }
             ></PokemonListing>
           </>
         </div>
       )}
-      {!dataLoaded && (
-        <Image src='/rings.svg' alt='loading' width={192} height={192} />
-      )}
+      {isLoading ||
+        isRefetching ||
+        (!pokemonPair && (
+          <Image src='/rings.svg' alt='loading' width={192} height={192} />
+        ))}
       <div className=' w-full text-xl text-center pb-4'>
         <a href='https://github.com/BahaaalHalabi01/pokemon-roundest-tutorial'>
           Github Repo
@@ -72,7 +84,7 @@ export default function Home() {
   )
 }
 
-type PokemonFromServer = RouterOutput['get-pokemon-by-id']
+type PokemonFromServer = RouterOutput['get-pokemon-pair']['firstPokemon']
 
 type PropsPoke = {
   pokemon: PokemonFromServer
